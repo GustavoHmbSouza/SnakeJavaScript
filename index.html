@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="estilo.css" media="screen" />
+    <title>Document</title>
+</head>
+<body>
+    <div id="principal">
+
+    </div>
+    
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+    function geraCobra()
+    {
+        var elemento_pai = document.querySelector('#principal');
+        var texto = document.createTextNode(tamanhoCobra);
+        var node = document.createElement('div');
+
+        node.appendChild(texto);
+        node.id = 'C-' + tamanhoCobra;
+
+        //tem que gerar atras do ultimo nó da cobra
+        if (tamanhoCobra!=0)
+        {
+            var nodeRabo = document.querySelector('#principal #C-' + (parseInt(tamanhoCobra) - 1));
+
+            var valorString;
+            var valorNum;
+
+            //eu uso a movimentos para ao invés da seta para pegar a onde 
+            //a ultima posição está apontando e não a primeira
+            //A primeira pode ta apontando pra cima, e a ultima pra esqueda,
+            //assim, o bloco deve ser criado a direita e não para baixo
+            if (movimentos[auxMovimentos-tamanhoCobra] == 'cima')
+            {
+                valorString = nodeRabo.style.top;
+                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+                //valorNum += 20;
+                node.style.top = valorNum + 'px'; 
+
+                node.style.left = nodeRabo.style.left;
+            }
+            else if (movimentos[auxMovimentos-tamanhoCobra] == 'direita')
+            {
+                valorString = nodeRabo.style.left;
+                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+                valorNum -= 20;
+                node.style.left = valorNum + 'px'; 
+
+                valorString = nodeRabo.style.top;
+                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+                valorNum -= 20;
+                node.style.top = valorNum + 'px'; 
+            }
+            else if (movimentos[auxMovimentos-tamanhoCobra] == 'baixo')
+            {
+                valorString = nodeRabo.style.top;
+                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+                valorNum -= 40;
+                node.style.top = valorNum + 'px'; 
+
+                node.style.left = nodeRabo.style.left;
+            }
+            else if (movimentos[auxMovimentos-tamanhoCobra] == 'esquerda')
+            {
+                valorString = nodeRabo.style.left;
+                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+                valorNum += 20;
+                node.style.left = valorNum + 'px'; 
+
+                valorString = nodeRabo.style.top;
+                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+                valorNum -= 20;
+                node.style.top = valorNum + 'px';             
+            }         
+        }
+        else
+        {
+            node.style.top = '100px'; 
+            node.style.left = '100px'; 
+        }
+
+        //seta o css
+        node.style.background = 'red';
+        node.style.width = '20px';
+        node.style.height = '20px';
+        node.style.textAlign = 'center';
+        node.style.position= 'relative';        
+
+        elemento_pai.appendChild(node);
+        tamanhoCobra++;
+    }
+
+    function movimento(idNodeCobra, seta)
+    {
+
+        var nodeCobra = document.querySelector('#principal #C-' + idNodeCobra);
+
+        var valorString;
+        var valorNum;
+
+        if (seta == 'cima')
+        {
+            valorString = nodeCobra.style.top;
+            valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+            valorNum -= 20;
+            nodeCobra.style.top = valorNum + 'px'; 
+        }
+        else if (seta == 'direita')
+        {
+            valorString = nodeCobra.style.left;
+            valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+            valorNum = valorNum + 20;
+            nodeCobra.style.left = valorNum + 'px'; 
+        }
+        else if (seta == 'baixo')
+        {
+            valorString = nodeCobra.style.top;
+            valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+            valorNum += 20;
+            nodeCobra.style.top = valorNum + 'px'; 
+        }
+        else if (seta == 'esquerda')
+        {
+            valorString = nodeCobra.style.left;
+            valorNum = parseInt(valorString.substring(0, valorString.length - 2));
+            valorNum -= 20;
+            nodeCobra.style.left = valorNum + 'px'; 
+        }
+    }
+
+    function alocaTecla()
+    {
+        if(event.keyCode == '119')
+        {
+            seta ='cima';
+        } 
+        else if (event.keyCode == '100')
+        {
+            seta = 'direita';
+        }
+        else if (event.keyCode == '97')
+        {
+            seta = 'esquerda';
+        }
+        else if (event.keyCode == '115')
+        {
+            seta = 'baixo';
+        }
+    }
+
+    //Cria um delay para a execução da operação para cada bloco
+    function gatilhoMovimento()
+    {
+        movimentos[auxMovimentos] = seta;
+
+        for(var i=0; i!= tamanhoCobra; i++)
+        {
+            movimento(i, movimentos[auxMovimentos-i]);
+        }
+        auxMovimentos++;
+    }
+
+    //Código começa aqui
+    var seta = 'esquerda';
+    var tamanhoCobra = 0;
+    var movimentos = [];
+    var auxMovimentos = 0;
+    geraCobra();
+    //geraCobra();
+
+    //apagar dps
+    var intervalo = window.setInterval(function() 
+    {
+        geraCobra(); 
+    }, 10000);
+
+    //Ativa as teclas WASD
+    document.body.onkeypress = alocaTecla;
+
+    //Executa a cada 0.2S
+    var intervalo = window.setInterval(function() 
+    {
+        gatilhoMovimento();  
+    }, 200);
+
+</script>
