@@ -8,54 +8,44 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="principal">
-
+    <div id="pai">
+        <main id="jogo">
+            <div id="principal"></div>
+        </main>
+        <section id="secao">
+            <nav id="menu">
+                <div id="pontuacao">
+                    <h2 id="pontos">0pts</h2>
+                </div>
+                <div id="proxDiminuicao">
+                    <h2>Tempo p/ próxima diminuição: 0s</h2>
+                </div>
+                <div id="tempoJogado">
+                    <h2>0S</h2>
+                </div>
+            </nav>
+        </section>
     </div>
     
 </body>
 </html>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <script>
-
+    //Gera a cobra
     function geraCobra()
     {
         var elemento_pai = document.querySelector('#principal');
-        var texto = document.createTextNode(tamanhoCobra);
         var node = document.createElement('div');
 
-        node.appendChild(texto);
         node.id = 'C-' + tamanhoCobra;
 
         //tem que gerar atras do ultimo nó da cobra
         if (tamanhoCobra!=0)
         {
             var nodeRabo = document.querySelector('#principal #C-' + (parseInt(tamanhoCobra) - 1));
-
             var valorString;
             var valorNum;
+            var texto = document.createTextNode("o");
 
             //eu uso a movimentos para ao invés da seta para pegar a onde 
             //a ultima posição está apontando e não a primeira
@@ -65,7 +55,7 @@
             {
                 valorString = nodeRabo.style.top;
                 valorNum = parseInt(valorString.substring(0, valorString.length - 2));
-                //valorNum += 20;
+                valorNum += 20;
                 node.style.top = valorNum + 'px'; 
 
                 node.style.left = nodeRabo.style.left;
@@ -77,16 +67,13 @@
                 valorNum -= 20;
                 node.style.left = valorNum + 'px'; 
 
-                valorString = nodeRabo.style.top;
-                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
-                valorNum -= 20;
-                node.style.top = valorNum + 'px'; 
+                node.style.top = nodeRabo.style.top; 
             }
             else if (movimentos[auxMovimentos-tamanhoCobra] == 'baixo')
             {
                 valorString = nodeRabo.style.top;
                 valorNum = parseInt(valorString.substring(0, valorString.length - 2));
-                valorNum -= 40;
+                valorNum -= 20;
                 node.style.top = valorNum + 'px'; 
 
                 node.style.left = nodeRabo.style.left;
@@ -98,32 +85,33 @@
                 valorNum += 20;
                 node.style.left = valorNum + 'px'; 
 
-                valorString = nodeRabo.style.top;
-                valorNum = parseInt(valorString.substring(0, valorString.length - 2));
-                valorNum -= 20;
-                node.style.top = valorNum + 'px';             
+                node.style.top = nodeRabo.style.top;             
             }         
         }
         else
         {
             node.style.top = '100px'; 
             node.style.left = '100px'; 
+            var texto = document.createTextNode('#');
         }
+
+        node.appendChild(texto);
 
         //seta o css
         node.style.background = 'red';
         node.style.width = '20px';
         node.style.height = '20px';
         node.style.textAlign = 'center';
-        node.style.position= 'relative';        
+        node.style.position= 'absolute';        
 
+        //joga o pedaço novo da cobra na tela
         elemento_pai.appendChild(node);
         tamanhoCobra++;
     }
 
+    //executa o movimento
     function movimento(idNodeCobra, seta)
     {
-
         var nodeCobra = document.querySelector('#principal #C-' + idNodeCobra);
 
         var valorString;
@@ -159,23 +147,36 @@
         }
     }
 
+    //Captura a tecla e troca a direção da cobra
     function alocaTecla()
     {
         if(event.keyCode == '119')
         {
-            seta ='cima';
+            if (!(seta == 'baixo' && tamanhoCobra > 2))
+            {
+                seta ='cima';   
+            }
         } 
         else if (event.keyCode == '100')
         {
-            seta = 'direita';
+            if (!(seta == 'esquerda' && tamanhoCobra > 2))
+            {
+                seta = 'direita';
+            }
         }
         else if (event.keyCode == '97')
         {
-            seta = 'esquerda';
+            if (!(seta == 'direita' && tamanhoCobra > 2))
+            {
+                seta = 'esquerda';
+            }
         }
         else if (event.keyCode == '115')
         {
-            seta = 'baixo';
+            if (!(seta == 'cima' && tamanhoCobra > 2))
+            {
+                seta = 'baixo';
+            }
         }
     }
 
@@ -191,27 +192,237 @@
         auxMovimentos++;
     }
 
+    //gera um numero aleatório 
+    function getRandom(min, max) 
+    {
+        var num = Math.floor(Math.random() * max + min); 
+        //Preciso que os numeros gerados seja divisiveis por 20
+        while(true)
+        {
+            if(num % 20 == 0)
+            {
+                break;
+            }
+            num++;
+        }    
+        return num + "px";
+    }
+
+    //gera a maça recebendo os parametros x e y
+    function geraMaca(x, y)
+    {
+        var elemento_pai = document.querySelector('#principal');
+        var texto = document.createTextNode(tamanhoMaca);
+        var node = document.createElement('div');
+
+        node.appendChild(texto);
+        node.id = 'M-' + tamanhoMaca;
+
+        //seta o css
+        node.style.top = x; 
+        node.style.left = y; 
+        node.style.background = 'green';
+        node.style.width = '20px';
+        node.style.height = '20px';
+        node.style.textAlign = 'center';
+        node.style.position= 'absolute';        
+
+        //joga o pedaço novo da cobra na tela
+        elemento_pai.appendChild(node);
+        tamanhoMaca++;
+    }
+
+    //Verifica se comeu uma maça
+    function comeuMaca()
+    {
+        var cabecaCobra = document.querySelector('#principal #C-0');
+        var maca;
+        for(var i=0; i!=tamanhoMaca; i++)
+        {
+            maca = document.querySelector('#principal #M-' + i);
+            //O for continua percorrendo o id das maças que ja foram comidas
+            //Por isso eu fiz esse tratamento
+            if (maca)
+            {
+                if(maca.style.top == cabecaCobra.style.top && maca.style.left == cabecaCobra.style.left)
+                {
+                    geraCobra(); 
+                    maca.remove();
+                    aumentaVelocidadeCobra();  
+                    atualizaPlacar();                  
+                }
+            }
+        }
+    }
+
+    function verificaBateuParede()
+    {
+        var cabecaCobra = document.querySelector('#principal #C-0');
+        var margin_topTemp = margin_top;
+        var margin_leftTemp = margin_left;
+
+        var cabecaCobraTopTemp = parseInt(cabecaCobra.style.top);
+        var cabecaCobraLeftTemp = parseInt(cabecaCobra.style.left);
+        //console.log(cabecaCobraTopTemp + " " )
+        //Como eu adiciono um padding no css, eu tive que descontar ele daqui tbm
+        if((cabecaCobraTopTemp) <= (margin_topTemp -  0) || (cabecaCobraTopTemp) >= (margin_topTemp + altura) || (cabecaCobraLeftTemp) <= (margin_leftTemp - 0) || (cabecaCobraLeftTemp) >= (margin_leftTemp + largura))
+        {
+            finalizarJogo();
+        }
+    }
+
+    function verificaBateuEmSi()
+    {
+        var cabecaCobra = document.querySelector('#principal #C-0');
+        for(var i=1; i!=tamanhoCobra; i++)
+        {
+            nodeCobra = document.querySelector('#principal #C-' + i);
+            if(cabecaCobra.style.top == nodeCobra.style.top && cabecaCobra.style.left == nodeCobra.style.left)
+            {
+                finalizarJogo();
+            }
+        }
+    }
+
+    //Aumenta a velocidade da cobra
+    function aumentaVelocidadeCobra()
+    {
+        if(velocidadeGame > 100)
+        {
+            velocidadeGame-=7;
+            clearInterval(frame);
+            frame = setInterval(function() 
+            {
+                gatilhoMovimento(); 
+                comeuMaca(); 
+                verificaBateuParede();
+                verificaBateuEmSi();
+            }, velocidadeGame);
+        }
+    }
+
+    function finalizarJogo()
+    {
+        clearInterval(frame);
+        clearInterval(frameMaca);
+        clearInterval(frameDiminuiDimencao);
+        clearInterval(frameTempoJogo);
+    }
+
+    function atualizaPlacar()
+    {
+        //Elimina o placar antigo
+        var placar = document.querySelector('#pai #secao #menu #pontuacao h2');
+        placar.remove();
+
+        //Cria um placar novo
+        var elemento_pai = document.querySelector('#pai #secao #menu #pontuacao');
+        var node = document.createElement('h2');
+        var texto = document.createTextNode('Pontos: ' + (tamanhoCobra-1));
+        node.appendChild(texto);
+        elemento_pai.appendChild(node);
+    }
+
+    function atualizatempoProximaDiminuicao()
+    {
+        //Elimina o placar antigo
+        var placar = document.querySelector('#pai #secao #menu #proxDiminuicao h2');
+        placar.remove();
+
+        //Cria um placar novo
+        var elemento_pai = document.querySelector('#pai #secao #menu #proxDiminuicao');
+        var node = document.createElement('h2');
+        var texto = document.createTextNode('Tempo p/ próxima diminuição: ' + tempoProximaDiminuicao);
+        node.appendChild(texto);
+        elemento_pai.appendChild(node);
+    }
+
+    function atualizaTempoJogado()
+    {
+        //Elimina o placar antigo
+        var placar = document.querySelector('#pai #secao #menu #tempoJogado h2');
+        placar.remove();
+
+        //Cria um placar novo
+        var elemento_pai = document.querySelector('#pai #secao #menu #tempoJogado');
+        var node = document.createElement('h2');
+        var texto = document.createTextNode('Tempo: ' + tempoJogado);
+        node.appendChild(texto);
+        elemento_pai.appendChild(node);
+    }
+
+
     //Código começa aqui
     var seta = 'esquerda';
     var tamanhoCobra = 0;
+    var tamanhoMaca = 0;
     var movimentos = [];
     var auxMovimentos = 0;
+    var velocidadeGame = 200;
+    var altura = 800;
+    var largura = 800;
+    var margin_top = 0;
+    var margin_left = 0;
+    var tempoJogado = 0;
+    var tempoProximaDiminuicao = 12;
+    //Cabeça
     geraCobra();
-    //geraCobra();
-
-    //apagar dps
-    var intervalo = window.setInterval(function() 
-    {
-        geraCobra(); 
-    }, 10000);
 
     //Ativa as teclas WASD
     document.body.onkeypress = alocaTecla;
 
-    //Executa a cada 0.2S
-    var intervalo = window.setInterval(function() 
+    //Executa o frame do jogo
+    var frame = setInterval(function() 
     {
-        gatilhoMovimento();  
-    }, 200);
+        gatilhoMovimento(); 
+        comeuMaca(); 
+        verificaBateuParede();
+        verificaBateuEmSi();
+    }, velocidadeGame);
 
+    //Executa a cada 4.7S a criação de uma maça
+    var frameMaca = setInterval(function() 
+    {
+        geraMaca(getRandom((margin_top + 20), (altura-20-margin_top)), getRandom((margin_left + 20), (largura-20-margin_left))); 
+    }, 4700);
+
+    //Diminui o tamanho do jogo
+    var frameDiminuiDimencao = setInterval(function() 
+    {
+        altura-=40;
+        largura-=40;
+        margin_top+=20;
+        margin_left+=20;
+
+        var elemento_pai = document.querySelector('#principal');
+        elemento_pai.style.height = (altura + "px");
+        elemento_pai.style.width = (largura + "px");
+        elemento_pai.style.margin = (margin_top + "px " + 0 + " " + 0 + " " + margin_left + "px");
+        if(altura == 520 && largura == 520)
+        {
+            clearInterval(frameTempoProximaDiminuicao);
+            clearInterval(frameDiminuiDimencao);
+        }
+
+        clearInterval(frameMaca);
+        frameMaca = setInterval(function() 
+        {
+            geraMaca(getRandom((margin_top + 20), (altura-20-margin_top)), getRandom((margin_left + 20), (largura-20-margin_left))); 
+        }, 4700);
+
+        tempoProximaDiminuicao = 12;
+    }, 12000);
+
+    //Executa a cada 1S o tempo jogado
+    var frameTempoJogo = setInterval(function() 
+    {
+        tempoJogado++;
+        atualizaTempoJogado();
+    }, 1000);
+
+    var frameTempoProximaDiminuicao = setInterval(function() 
+    {
+        tempoProximaDiminuicao--;
+        atualizatempoProximaDiminuicao();
+    }, 1000);
 </script>

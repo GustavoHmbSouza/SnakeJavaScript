@@ -1,6 +1,24 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+#pai
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+#jogo
+{
+    background: rgb(158, 135, 135);
+    width: 800px;
+    height: 800px;
+}
 #principal
 {
-    background: #E0FFFF;
+    background: rgb(118, 212, 212);
     width: 800px;
     height: 800px;
 }
@@ -9,7 +27,19 @@
 {
     transition-property: top, left;
     transition-duration:  0.2s;
-    transition-timing-function:  linear; 
+    transition-timing-function:  linear;
+    position: relative;         
 }
+
+#pai #secao #menu
+{
+    background: rgb(116, 47, 47);
+    width: 400px;
+}
+
+/*
+    Maior que 3 não voltar pra trás
+    Colocar um rado
+*/
 
 
