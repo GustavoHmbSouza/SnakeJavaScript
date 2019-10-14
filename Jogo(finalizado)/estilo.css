@@ -1,0 +1,55 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+#pai
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+#jogo
+{
+    background: rgb(158, 135, 135);
+    width: 800px;
+    height: 800px;
+}
+#principal
+{
+    background: rgb(118, 212, 212);
+    width: 800px;
+    height: 800px;
+}
+
+#principal .velocidade2
+{
+    transition: all 0.2s linear;
+    position: relative;         
+}
+
+#principal .velocidade15
+{
+    transition: all 0.15s linear;
+    position: relative;         
+}
+
+#principal .velocidade1
+{
+    transition: all 0.10s linear;
+    position: relative;         
+}
+
+#pai #secao #menu
+{
+    background: rgb(198, 228, 228);
+    width: 400px;
+}
+
+/*
+    Maior que 3 não voltar pra trás
+    Colocar um rado
+*/
+
+
