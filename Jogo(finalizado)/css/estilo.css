@@ -47,6 +47,15 @@
     width: 400px;
 }
 
+#maca
+{
+    background: green;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    position: absolute;
+}
+
 /*
     Maior que 3 não voltar pra trás
     Colocar um rado

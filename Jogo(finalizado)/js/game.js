@@ -204,13 +204,9 @@
 
         //seta o css
         node.style.top = x; 
-        node.style.left = y; 
-        node.style.background = 'green';
-        node.style.width = '20px';
-        node.style.height = '20px';
-        node.style.textAlign = 'center';
-        node.style.position= 'absolute';        
-
+        node.style.left = y;         
+        node.className = "maca";
+        
         //joga o pedaço novo da cobra na tela
         elemento_pai.appendChild(node);
         tamanhoMaca++;
@@ -220,23 +216,15 @@
     function comeuMaca()
     {
         var cabecaCobra = document.querySelector('#principal #C-0');
-        var maca;
-        for(var i=0; i!=tamanhoMaca; i++)
+        var maca = document.querySelector('#principal #M-' + (tamanhoMaca - 1));
+
+        if(maca.style.top == cabecaCobra.style.top && maca.style.left == cabecaCobra.style.left)
         {
-            maca = document.querySelector('#principal #M-' + i);
-            //O for continua percorrendo o id das maças que ja foram comidas
-            //Por isso eu fiz esse tratamento
-            if (maca)
-            {
-                if(maca.style.top == cabecaCobra.style.top && maca.style.left == cabecaCobra.style.left)
-                {
-                    geraCobra(); 
-                    maca.remove();
-                    aumentaVelocidadeCobra();  
-                    atualizaPlacar(); 
-                    verificaGeraMaça();               
-                }
-            }
+            geraCobra(); 
+            maca.remove();
+            aumentaVelocidadeCobra();  
+            atualizaPlacar(); 
+            verificaGeraMaça();               
         }
     }
 
@@ -245,28 +233,23 @@
     {
         var xM = getRandom(0,780);
         var yM = getRandom(0,780);
-        var achou = false;
         for(var i=0; i!=tamanhoCobra; i++)
         {
             nodeCobra = document.querySelector('#principal #C-' + i);
             if(xM == nodeCobra.style.top && yM == nodeCobra.style.left)
             {
-                console.log("Encontrou inconsistencia");
                 verificaGeraMaça();
                 return;
             }
-        }
-        
+        }     
 
         geraMaca(xM, yM);
-        return;
     }
 
     function verificaBateuParede()
     {
         var cabecaCobra = document.querySelector('#principal #C-0');
 
-        //console.log(cabecaCobraTopTemp + " " )
         //Como eu adiciono um padding no css, eu tive que descontar ele daqui tbm
         if(cabecaCobra.style.top== (-20+"px") || cabecaCobra.style.top==(800+"px") || cabecaCobra.style.left==(-20+"px") || cabecaCobra.style.left==(800+"px"))
         {
@@ -288,37 +271,26 @@
     }
 
     //Aumenta a velocidade da cobra
-    function aumentaVelocidadeCobra() //transition-duration
+    function aumentaVelocidadeCobra()
     {
         if(velocidadeGame > 100)
         {
-
-            if(velocidadeGame == 158)
-            {
-                for(var i=0; i!=tamanhoCobra; i++)
-                {
-                    nodeCobra = document.querySelector('#principal #C-' + i);
-                    nodeCobra.className = 'velocidade15';
-                }
-            }
-            else if (velocidadeGame == 109)
-            {
-                for(var i=0; i!=tamanhoCobra; i++)
-                {
-                    nodeCobra = document.querySelector('#principal #C-' + i);
-                    nodeCobra.className = 'velocidade1';
-                }
-            }
+            atualizaVelocidadeAnimacao();            
 
             velocidadeGame-=7;
-            clearInterval(frame);
-            frame = setInterval(function() 
-            {
-                gatilhoMovimento(); 
-                comeuMaca(); 
-                verificaBateuParede();
-                verificaBateuEmSi();
-            }, velocidadeGame);
+            setaFrame();
+        }
+    }
+
+    function atualizaVelocidadeAnimacao()
+    {
+        if(velocidadeGame == 158)
+        {
+            $("#principal div[class='velocidade2']").attr("class", "velocidade15");
+        }
+        else if (velocidadeGame == 109)
+        {
+            $("#principal div[class='velocidade15']").attr("class", "velocidade1");
         }
     }
 
@@ -332,44 +304,44 @@
     {
         if(tamanhoCobra >= 2)
         {
-            var nodeCobra = document.querySelector('#principal #C-' + tamanhoCobra);
-
-            nodeCobra.innerHTML = "*";
-            nodeCobra.style.background = "rgb(255, 56, 56)";
-
-            nodeCobra = document.querySelector('#principal #C-' + (tamanhoCobra-1));
-            nodeCobra.innerHTML = "o";
-            nodeCobra.style.background = "white";
-
+            $("#C-" + tamanhoCobra).text("*").css("background", "rgb(255, 56, 56)");
+            $("#C-" + (tamanhoCobra-1)).text("o").css("background", "white");
         }
     }
 
+    //atualiza a função de frame do game
+    function setaFrame()
+    {
+        clearInterval(frame);
+        frame = setInterval(function() 
+        {
+            gatilhoMovimento(); 
+            comeuMaca(); 
+            verificaBateuParede();
+            verificaBateuEmSi();
+        }, velocidadeGame);
+    }
 
     //Código começa aqui
-    var seta = 'esquerda';
+    var seta = 'direita';
     var tamanhoCobra = 0;
     var tamanhoMaca = 0;
     var movimentos = [];
     var auxMovimentos = 0;
     var velocidadeGame = 200;
 
-    //Cabeça
+    //Gera Cabeça
     geraCobra();
 
-    //Primeira maça
+    //Gera Primeira maça
     geraMaca(getRandom(0,780),getRandom(0,780));                
 
     //Ativa as teclas WASD
     document.body.onkeypress = alocaTecla;
 
     //Executa o frame do jogo
-    var frame = setInterval(function() 
-    {
-        gatilhoMovimento(); 
-        comeuMaca(); 
-        verificaBateuParede();
-        verificaBateuEmSi();
-    }, velocidadeGame);
+    var frame;
+    setaFrame();
 
     //Executa a cada 1S o tempo jogado
     var frameTempoJogo = setInterval(function() 
